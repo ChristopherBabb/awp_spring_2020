@@ -1,59 +1,69 @@
-import React, {Component} from 'react';
-import './app.css';
-import List from './List'
+import React, { Component } from 'react';
+import List from "./List";
 import AddTask from "./AddTask";
 
-class App extends Component {
 
+
+/*
+    This template demonstrates the structure of a simple React app that fetches data from a Web API.
+    The actual implementation is left as an exercise.
+ */
+
+
+
+
+class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            todoList: [
-                { text: 'Do laundry', done: false },
-                { text: 'Clean bedroom', done: true },
-                { text: 'Bake cake', done: true },
-                { text: 'Pick up groceries', done: false },
-                { text: 'Post letter', done: false }
-            ]
-        };
+            data: [] // Empty state
+        }
     }
 
-    addTask(task) {
-        // This is the task object that will be saved to the list
-        const taskObject = {
-            text: task,
-            done: false
-        };
+    // This method is automatically invoked when this App is first mounted (rendered).
+    componentDidMount() {
+        this.getData();
+    }
 
-        // Set a new state object with a new list of tasks
-        this.setState({
-            // The new todoList contains all the old items + the new taskObject (...spread syntax)
-            // MDN: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax
-            todoList: [...this.state.todoList, taskObject]
+    // Fetching data from the API and putting it in the state
+    async getData() {
+        const url = 'https://krdo-todo-api.herokuapp.com/api/tasks';
+        const response = await fetch(url);
+        const data = await response.json();
+        this.setState({ data: data })
+        console.log(data)
+    }
+
+    // Posting new data to the API
+    async addTask(text) {
+        // TODO:
+        //  Step 1: Use fetch to POST new data
+        const url = 'https://krdo-todo-api.herokuapp.com/api/tasks';
+        const response = await fetch(url,{
+            headers:{
+                'Content-Type': 'application/json'
+            },
+            method: 'POST',
+            body: JSON.stringify( {
+                text: "Write this example",
+                done: false
+            })
         });
-    }
-
-    changeDone(index) {
-        // Make a copy of this.state.todoList as newList (spread syntax)
-        const newList = [...this.state.todoList];
-        // Find the item and reverse "done"
-        newList[index].done = !newList[index].done;
-        // Set state to the new copy of the list
-        this.setState({
-            todoList: newList
-        })
+        const data = await response.json();
+        this.getData({})
+        //  Step 2: Call 'this.getData()' to update contents in state
     }
 
     render() {
-        return (
-            <div className="contents">
-                <div className="element">
-                    <h1>Todo List</h1>
-                    <List todoList={this.state.todoList} changeDone={index => this.changeDone(index)}/>
+        return ( 
+            <div className = "contents" >
+             <div className = "element" >
+                <h1> Todo List </h1>
+                    {<List data = { this.state.data }></List>}
                     <AddTask addTask={(task) => this.addTask(task)}/>
-                </div>
+             </div> 
             </div>
-        );
+        )
     }
 }
 

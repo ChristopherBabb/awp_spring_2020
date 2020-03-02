@@ -5,7 +5,7 @@ export default class List extends Component {
 
     render() {
         let items = [];
-        this.props.todoList.forEach((value, index) => {
+        this.props.data.forEach((value, index) => {
             items.push(
                 <li key={index}><Task task={value} index={index} changeDone={this.props.changeDone}/></li>
             )
